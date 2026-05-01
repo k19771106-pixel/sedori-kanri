@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>せどり在庫管理の基本 | せどり管理ブログ</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title"><a href="../index.html">せどり管理ブログ</a></h1>
+      <p class="site-description">メルカリ・ヤフオク・ラクマを一括管理するノウハウを発信</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <a class="back-link" href="../index.html">← 一覧に戻る</a>
+
+    <article>
+      <header class="article-header">
+        <div class="post-meta">
+          <span class="post-date">2026年4月20日</span>
+          <span class="post-category">在庫管理</span>
+        </div>
+        <h1>せどり在庫管理の基本 ― スプレッドシートで利益を見える化する</h1>
+      </header>
+
+      <div class="article-body">
+        <p>
+          せどりで赤字が続く原因のほとんどは「利益の計算ミス」です。
+          仕入れ値だけを見て安く仕入れたつもりでも、
+          <strong>手数料・送料・梱包費を引いたら赤字</strong>というケースは珍しくありません。
+          スプレッドシートで正確に管理すれば、どの商品が稼ぎ頭かが一目でわかります。
+        </p>
+
+        <h2>管理シートに最低限必要な列</h2>
+        <ul>
+          <li><strong>商品名</strong>：検索しやすい名称</li>
+          <li><strong>仕入れ日</strong>：回転率の計算に使用</li>
+          <li><strong>仕入れ値</strong>：送料・手数料込みの実費</li>
+          <li><strong>販売プラットフォーム</strong>：メルカリ・ヤフオクなど</li>
+          <li><strong>販売価格</strong>：実際に売れた金額</li>
+          <li><strong>販売手数料</strong>：プラットフォームごとに異なる</li>
+          <li><strong>発送送料</strong>：実際にかかった送料</li>
+          <li><strong>粗利</strong>：自動計算（= 販売価格 − 仕入れ値 − 手数料 − 送料）</li>
+          <li><strong>ステータス</strong>：出品中・売却済み・返品など</li>
+        </ul>
+
+        <h2>粗利の自動計算式</h2>
+        <p>スプレッドシートのI列（粗利）に以下の数式を入れると自動計算されます。</p>
+        <pre><code>=IF(E2="","", E2 - C2 - F2 - G2)</code></pre>
+        <p>
+          列の対応：E列＝販売価格、C列＝仕入れ値、F列＝手数料、G列＝送料。
+          列構成を変えた場合は参照先を変更してください。
+        </p>
+
+        <h2>在庫回転率で仕入れを改善する</h2>
+        <p>
+          売れるまでの日数（販売日 − 仕入れ日）を記録しておくと、
+          回転が遅い商品カテゴリが見えてきます。
+          30日以上売れない商品は値下げを検討し、
+          キャッシュフローが詰まらないようにすることが長期運営のコツです。
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 せどり管理ブログ</p>
+    </div>
+  </footer>
+</body>
+</html>

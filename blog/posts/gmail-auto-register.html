@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gmail自動連携スクリプトで売上を自動記録する方法 | せどり管理ブログ</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title"><a href="../index.html">せどり管理ブログ</a></h1>
+      <p class="site-description">メルカリ・ヤフオク・ラクマを一括管理するノウハウを発信</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <a class="back-link" href="../index.html">← 一覧に戻る</a>
+
+    <article>
+      <header class="article-header">
+        <div class="post-meta">
+          <span class="post-date">2026年5月1日</span>
+          <span class="post-category">ツール紹介</span>
+        </div>
+        <h1>Gmail自動連携スクリプトで売上を自動記録する方法</h1>
+      </header>
+
+      <div class="article-body">
+        <p>
+          複数プラットフォームでせどりをしていると、メルカリ・ヤフオク・ラクマ・ヤフーフリマそれぞれから
+          売上通知メールが届き、手動でスプレッドシートに入力するのは大変です。
+          今回紹介するGoogle Apps Script（GAS）を使えば、<strong>1分ごとに自動でメールを読み取り、在庫管理表に転記</strong>できます。
+        </p>
+
+        <h2>仕組みの概要</h2>
+        <p>
+          GASはGoogleのサーバー上で動くJavaScriptです。Gmailにアクセスする権限を付与すると、
+          受信トレイを定期的にスキャンして売上通知を検出し、スプレッドシートへ書き込めます。
+        </p>
+        <ul>
+          <li>対応プラットフォーム：メルカリ・メルカリShops・ヤフオク・ヤフーフリマ・ラクマ</li>
+          <li>重複登録防止：最終チェック時刻をScriptPropertiesに保存</li>
+          <li>同時実行防止：LockServiceで排他制御</li>
+        </ul>
+
+        <h2>スクリプトの導入手順</h2>
+        <ol>
+          <li>Googleスプレッドシートを新規作成し、シート名を「帳上管理」にする</li>
+          <li>メニューから「拡張機能」→「Apps Script」を開く</li>
+          <li>下記のコードをコピー＆ペーストして保存する</li>
+          <li>初回実行時にGmailへのアクセス権限を承認する</li>
+          <li>トリガーで「checkSalesEmails」を1分ごとに実行するよう設定する</li>
+        </ol>
+
+        <h2>メインエントリー関数</h2>
+        <pre><code>const SHEET_NAME    = '帳上管理';
+const STATUS_COL_NUM = 14; // N列（ステータス）
+
+function checkSalesEmails() {
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(0)) {
+    Logger.log('別の実行が進行中のためスキップ');
+    return;
+  }
+  try {
+    const sheet = getOrCreateSheet();
+    const props = PropertiesService.getScriptProperties();
+    const lastCheck = props.getProperty('lastCheck');
+    const since = lastCheck
+      ? new Date(new Date(lastCheck).getTime() - 3 * 60 * 1000)
+      : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    processMercariEmails(sheet, since);
+    processYahooAuctionEmails(sheet, since);
+    processYahooFleaMarketEmails(sheet, since);
+    processMercariShopsEmails(sheet, since);
+    processRakumaEmails(sheet, since);
+
+    props.setProperty('lastCheck', new Date().toISOString());
+    Logger.log('チェック完了: ' + new Date().toLocaleString('ja-JP'));
+  } finally {
+    lock.releaseLock();
+  }
+}</code></pre>
+
+        <h2>運用のコツ</h2>
+        <p>
+          トリガーを1分間隔に設定すると月間の無料実行枠（6時間/日）を消費しやすいです。
+          売上が多くない場合は5〜10分間隔でも十分です。
+          また、スクリプトのエラー通知メールが届いた場合は、
+          Gmailのフィルタ変更（件名の文言変更）が原因であることが多いので確認してください。
+        </p>
+      </div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 せどり管理ブログ</p>
+    </div>
+  </footer>
+</body>
+</html>

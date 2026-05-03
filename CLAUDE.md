@@ -99,7 +99,25 @@ Logger.log('BODY: ' + body.substring(0, 500));  // メール本文確認
 Logger.log('MAPPED: ' + mappedName);             // マッピング結果確認
 ```
 
-### 8. 仕入単価・送料が空になる場合
+### 9. ヤフオク価格が0になる場合（修正済み）
+- 「終了（落札者あり）」メールで行が作成されるが価格が0になる問題
+- 原因1: 価格の正規表現が `落札金額[：:]` だったが、メールは `落札金額　890 円`（全角スペース区切り）
+  - 修正: `/落札金額[\s：:　]*([\d,]+)\s*円/`
+- 原因2: 「支払いが完了しました」メール処理時、ステータスのみ更新して価格を更新していなかった
+  - 修正: `if (existingRow > 0)` ブロックに価格・売上・手数料・利益の更新処理を追加
+  ```javascript
+  if (price > 0) {
+    var fee = Math.round(price * 0.1);
+    sheet.getRange(existingRow, 5).setValue(price);  // 販売単価
+    sheet.getRange(existingRow, 6).setValue(price);  // 売上
+    sheet.getRange(existingRow, 10).setValue(fee);   // 販売手数料
+    var cost = sheet.getRange(existingRow, 8).getValue() || 0;
+    var shipping = sheet.getRange(existingRow, 9).getValue() || 0;
+    sheet.getRange(existingRow, 11).setValue(price - cost - shipping - fee); // 利益
+  }
+  ```
+
+
 - MAPPEDログが生の商品名のままならマッピング失敗
 - 原因: キーワードの文字コード違い（→4番参照）
 - 原因: 在庫サマリーB列と商品マッピングB列が不一致

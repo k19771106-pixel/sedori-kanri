@@ -843,12 +843,13 @@
 \cb3       \strokec9 recordSale\strokec4 (\strokec9 sheet\strokec4 , \{ \strokec9 date\strokec4 : \strokec9 date\strokec4 , \strokec9 product\strokec4 : \strokec9 components\strokec4 [\strokec9 c\strokec4 ], \strokec9 platform\strokec4 : \strokec9 platform\strokec4 , \strokec9 qty\strokec4 : \cf8 \strokec8 1\cf4 \strokec4 , \strokec9 sellPrice\strokec4 : \strokec9 p\strokec4  \});\cb1 \
 \cb3     \}\cb1 \
 \cb3   \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 var\cf4 \strokec4  \strokec9 qty\strokec4  = \strokec9 mapProductQty\strokec4 (\strokec9 rawName\strokec4 );\cb1 \
 \cb3     \strokec9 recordSale\strokec4 (\strokec9 sheet\strokec4 , \{\cb1 \
 \cb3       \strokec9 date\strokec4 : \strokec9 date\strokec4 ,\cb1 \
 \cb3       \strokec9 product\strokec4 : \strokec9 mapProductName\strokec4 (\strokec9 rawName\strokec4 ),\cb1 \
 \cb3       \strokec9 platform\strokec4 : \strokec9 platform\strokec4 ,\cb1 \
-\cb3       \strokec9 qty\strokec4 : \strokec9 mapProductQty\strokec4 (\strokec9 rawName\strokec4 ),\cb1 \
-\cb3       \strokec9 sellPrice\strokec4 : \strokec9 price\cb1 \strokec4 \
+\cb3       \strokec9 qty\strokec4 : \strokec9 qty\strokec4 ,\cb1 \
+\cb3       \strokec9 sellPrice\strokec4 : (\strokec9 qty\strokec4  > \cf8 \strokec8 1\cf4 \strokec4 ) ? \cf6 \strokec6 Math\cf4 \strokec4 .\strokec9 round\strokec4 (\strokec9 price\strokec4  / \strokec9 qty\strokec4 ) : \strokec9 price\cb1 \strokec4 \
 \cb3     \});\cb1 \
 \cb3   \}\cb1 \
 \cb3 \}\cb1 \

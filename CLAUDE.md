@@ -118,6 +118,24 @@ Logger.log('MAPPED: ' + mappedName);             // マッピング結果確認
   ```
 
 
+### 10. セット商品の売上が個数倍になる問題（修正済み）
+- **症状**: 蓄光テープ 2個セット（¥980）→ 出荷数=2, 売上=¥1,960（2倍になる）
+- **原因**: `recordSaleAuto` の else ブロックで `sellPrice: price`（980）のまま渡し、`recordSale` が `qty × sellPrice = 2 × 980 = 1,960` と計算していた
+- **修正**: qty > 1 のとき `sellPrice = Math.round(price / qty)` に変更
+  ```javascript
+  // recordSaleAuto の else ブロック
+  var qty = mapProductQty(rawName);
+  recordSale(sheet, {
+    date: date,
+    product: mapProductName(rawName),
+    platform: platform,
+    qty: qty,
+    sellPrice: (qty > 1) ? Math.round(price / qty) : price
+  });
+  ```
+- **結果**: 出荷数=2、販売単価=490（980÷2）、売上=¥980 ✓
+- 1個商品は qty=1 なので sellPrice は price のまま（変化なし）
+
 - MAPPEDログが生の商品名のままならマッピング失敗
 - 原因: キーワードの文字コード違い（→4番参照）
 - 原因: 在庫サマリーB列と商品マッピングB列が不一致

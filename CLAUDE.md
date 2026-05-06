@@ -156,8 +156,7 @@ Logger.log('MAPPED: ' + mappedName);             // マッピング結果確認
   }
   if (acted) markAsProcessed(msg.getId());  // 変更前: markAsProcessed(msg.getId());
   ```
-- **対応済み**: ヤフオク（processYahooAuctionBatch）
-- **未対応**: ヤフーフリマ、メルカリShops、ラクマ、メルカリ（順次修正予定）
+- **対応済み**: 全プラットフォーム（ヤフオク、ヤフーフリマ、メルカリShops、ラクマ、メルカリ）
 
 - MAPPEDログが生の商品名のままならマッピング失敗
 - 原因: キーワードの文字コード違い（→4番参照）

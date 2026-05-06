@@ -136,6 +136,29 @@ Logger.log('MAPPED: ' + mappedName);             // マッピング結果確認
 - **結果**: 出荷数=2、販売単価=490（980÷2）、売上=¥980 ✓
 - 1個商品は qty=1 なので sellPrice は price のまま（変化なし）
 
+### 11. 処理済みフラグが誤ってセットされる問題（修正済み）
+- **症状**: メールが届いているのに売上管理に反映されない。フラグリセット→手動実行すると正常に処理される
+- **原因**: `isDuplicateRow` が true を返した場合（行が作成されない）でも `markAsProcessed` が呼ばれてフラグだけ残る
+- **修正**: `processYahooAuctionBatch`（他プラットフォームも同様）で `acted` フラグを追加し、実際に行の作成・更新が行われた時だけ `markAsProcessed` を呼ぶ
+  ```javascript
+  var acted = false;
+  if (existingRow > 0) {
+    updateRowStatus(...);
+    acted = true;
+  } else {
+    if (nameRow > 0) {
+      updateRowStatus(...);
+      acted = true;
+    } else if (!isDuplicateRow(...)) {
+      recordSaleAuto(...);
+      acted = true;
+    }
+  }
+  if (acted) markAsProcessed(msg.getId());  // 変更前: markAsProcessed(msg.getId());
+  ```
+- **対応済み**: ヤフオク（processYahooAuctionBatch）
+- **未対応**: ヤフーフリマ、メルカリShops、ラクマ、メルカリ（順次修正予定）
+
 - MAPPEDログが生の商品名のままならマッピング失敗
 - 原因: キーワードの文字コード違い（→4番参照）
 - 原因: 在庫サマリーB列と商品マッピングB列が不一致
